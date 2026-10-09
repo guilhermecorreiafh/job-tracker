@@ -1,12 +1,16 @@
 using JobTracker.Api.Data;
 using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddControllers()
+    .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+builder.Services.AddHealthChecks();
+
 builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -18,6 +22,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 app.UseHttpsRedirection();
@@ -25,5 +30,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHealthChecks("/health");
 
 app.Run();

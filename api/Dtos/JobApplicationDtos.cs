@@ -20,3 +20,8 @@ public record JobApplicationResponse(
     DateOnly? AppliedAt,
     string? Notes,
     DateTime CreatedAt);
+
+public record StageChangeResponse(
+    Stage? FromStage,
+    Stage ToStage,
+    DateTime ChangedAt);

@@ -52,6 +52,8 @@ public class JobApplicationsController(AppDbContext db) : ControllerBase
             return NotFound();
 
         Apply(application, request);
+        application.MoveTo(request.Stage, DateTime.UtcNow);
+        application.StartAt(request.Stage, DateTime.UtcNow);
         await db.SaveChangesAsync();
 
         return NoContent();
@@ -71,12 +73,25 @@ public class JobApplicationsController(AppDbContext db) : ControllerBase
         return NoContent();
     }
 
+    [HttpGet("{id:int}/history")]
+    public async Task<ActionResult<List<StageChangeResponse>>> GetHistory(int id)
+    {
+        var exists = await db.JobApplications.AnyAsync(a => a.Id == id);
+
+        if (!exists)
+            return NotFound();
+
+        return await db.StageChanges
+            .Where(c => c.JobApplicationId == id)
+            .OrderBy(c => c.ChangedAt)
+            .Select(c => new StageChangeResponse(c.FromStage, c.ToStage, c.ChangedAt))
+            .ToListAsync();
+    }
     private static void Apply(JobApplication application, JobApplicationRequest request)
     {
         application.Company = request.Company.Trim();
         application.Role = request.Role.Trim();
         application.Url = string.IsNullOrWhiteSpace(request.Url) ? null : request.Url.Trim();
-        application.Stage = request.Stage;
         application.AppliedAt = request.AppliedAt;
         application.Notes = request.Notes;
     }

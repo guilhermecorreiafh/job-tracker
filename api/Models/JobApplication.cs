@@ -23,7 +23,7 @@ public class JobApplication
         if (newStage == Stage)
             return false;
 
-        StageChanges.Add(new StageChange {FromStage = Stage, ToStage = Stage, ChangedAt = when});
+        StageChanges.Add(new StageChange {FromStage = Stage, ToStage = newStage, ChangedAt = when});
         Stage = newStage;
         return true;
     }

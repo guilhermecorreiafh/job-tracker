@@ -12,7 +12,7 @@ export async function getApplications() : Promise<JobApplication[]>{
 }
 
 export async function updateApplication(application : JobApplication) : Promise<void> {
-    const response = await fetch(`/api/job-applications/${application.id}`{
+    const response = await fetch(`/api/job-applications/${application.id}`, {
         method: 'PUT',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({

@@ -63,6 +63,52 @@ namespace JobTracker.Api.Migrations
 
                     b.ToTable("JobApplications");
                 });
+
+            modelBuilder.Entity("JobTracker.Api.Models.StageChange", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("ChangedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("FromStage")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int>("JobApplicationId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ToStage")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobApplicationId", "ChangedAt");
+
+                    b.ToTable("StageChanges");
+                });
+
+            modelBuilder.Entity("JobTracker.Api.Models.StageChange", b =>
+                {
+                    b.HasOne("JobTracker.Api.Models.JobApplication", "JobApplication")
+                        .WithMany("StageChanges")
+                        .HasForeignKey("JobApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("JobApplication");
+                });
+
+            modelBuilder.Entity("JobTracker.Api.Models.JobApplication", b =>
+                {
+                    b.Navigation("StageChanges");
+                });
 #pragma warning restore 612, 618
         }
     }

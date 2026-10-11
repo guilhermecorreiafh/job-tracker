@@ -8,6 +8,7 @@ import {
   KanbanProvider,
 } from '@/components/kibo-ui/kanban'
 import { getApplications, updateApplication } from './api'
+import { ApplicationForm } from './ApplicationForm'
 import { STAGES, type JobApplication, type Stage } from './types'
 
 type BoardItem = {
@@ -70,8 +71,13 @@ function App() {
 
   return (
     <main className="min-h-screen p-6">
-      <h1 className="mb-1 text-2xl font-semibold">Job Tracker</h1>
-      <p className="mb-6 text-sm text-muted-foreground">{items.length} candidaturas</p>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="mb-1 text-2xl font-semibold">Job Tracker</h1>
+          <p className="text-sm text-muted-foreground">{items.length} candidaturas</p>
+        </div>
+        <ApplicationForm onCreated={load} />
+      </div>
 
       {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
 

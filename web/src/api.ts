@@ -1,31 +1,48 @@
-import type { JobApplication } from "./types";
+import type { JobApplication } from './types'
 
-export async function getApplications() : Promise<JobApplication[]>{
-    const response = await fetch('/api/job-applications')
+export type ApplicationInput = Omit<JobApplication, 'id' | 'createdAt'>
 
-    if (!response.ok){
-        throw new Error('Erro ao carregar candidaturas')
-    
-    }
-
-    return response.json()
+function toBody(input: ApplicationInput) {
+  return JSON.stringify({
+    company: input.company,
+    role: input.role,
+    url: input.url,
+    stage: input.stage,
+    appliedAt: input.appliedAt,
+    notes: input.notes,
+  })
 }
 
-export async function updateApplication(application : JobApplication) : Promise<void> {
-    const response = await fetch(`/api/job-applications/${application.id}`, {
-        method: 'PUT',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            company: application.company,
-            role: application.role,
-            url: application.url,
-            stage: application.stage,
-            appliedAt: application.applieadAt,
-            notes: application.notes,
-        }),
-    })
+export async function getApplications(): Promise<JobApplication[]> {
+  const response = await fetch('/api/job-applications')
 
-    if(!response.ok){
-        throw new Error('Erro ao salvar candidatura')
-    }
+  if (!response.ok) {
+    throw new Error('Erro ao carregar candidaturas')
+  }
+
+  return response.json()
+}
+
+export async function createApplication(input: ApplicationInput): Promise<void> {
+  const response = await fetch('/api/job-applications', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: toBody(input),
+  })
+
+  if (!response.ok) {
+    throw new Error('Confira os campos: empresa e cargo são obrigatórios, e o link precisa começar com https://')
+  }
+}
+
+export async function updateApplication(application: JobApplication): Promise<void> {
+  const response = await fetch(`/api/job-applications/${application.id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: toBody(application),
+  })
+
+  if (!response.ok) {
+    throw new Error('Erro ao salvar candidatura')
+  }
 }

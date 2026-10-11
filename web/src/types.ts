@@ -6,7 +6,7 @@ export type JobApplication = {
     role: string
     url: string | null
     stage: Stage
-    applieadAt: string | null
+    appliedAt: string | null
     notes: string | null
     createdAt: string
 }

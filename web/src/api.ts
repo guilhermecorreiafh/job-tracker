@@ -46,3 +46,11 @@ export async function updateApplication(application: JobApplication): Promise<vo
     throw new Error('Erro ao salvar candidatura')
   }
 }
+
+export async function deleteApplication(id: number): Promise<void> {
+  const response = await fetch(`/api/job-applications/${id}`, { method: 'DELETE' })
+
+  if (!response.ok) {
+    throw new Error('Erro ao excluir candidatura')
+  }
+}

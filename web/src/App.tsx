@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { DragEndEvent } from '@dnd-kit/core'
+import { Pencil } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import {
   KanbanBoard,
   KanbanCard,
@@ -35,6 +37,8 @@ function formatDate(date: string | null) {
 function App() {
   const [items, setItems] = useState<BoardItem[]>([])
   const [error, setError] = useState<string | null>(null)
+  const [formOpen, setFormOpen] = useState(false)
+  const [editing, setEditing] = useState<JobApplication | null>(null)
   const itemsRef = useRef<BoardItem[]>([])
 
   function updateItems(next: BoardItem[]) {
@@ -52,6 +56,16 @@ function App() {
   }
 
   useEffect(load, [])
+
+  function openNew() {
+    setEditing(null)
+    setFormOpen(true)
+  }
+
+  function openEdit(application: JobApplication) {
+    setEditing(application)
+    setFormOpen(true)
+  }
 
   async function handleDragEnd(event: DragEndEvent) {
     const item = itemsRef.current.find(i => i.id === event.active.id)
@@ -76,7 +90,7 @@ function App() {
           <h1 className="mb-1 text-2xl font-semibold">Job Tracker</h1>
           <p className="text-sm text-muted-foreground">{items.length} candidaturas</p>
         </div>
-        <ApplicationForm onCreated={load} />
+        <Button onClick={openNew}>Nova candidatura</Button>
       </div>
 
       {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
@@ -101,8 +115,23 @@ function App() {
                 <KanbanCards id={column.id}>
                   {(item: BoardItem) => (
                     <KanbanCard key={item.id} id={item.id} name={item.name} column={item.column}>
-                      <p className="text-sm font-medium">{item.application.company}</p>
-                      <p className="text-xs text-muted-foreground">{item.application.role}</p>
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <p className="text-sm font-medium">{item.application.company}</p>
+                          <p className="text-xs text-muted-foreground">{item.application.role}</p>
+                        </div>
+                        <button
+                          type="button"
+                          onPointerDown={e => e.stopPropagation()}
+                          onMouseDown={e => e.stopPropagation()}
+                          onTouchStart={e => e.stopPropagation()} 
+                          onClick={() => openEdit(item.application)}
+                          className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+                          aria-label={`Editar ${item.application.company}`}
+                        >
+                          <Pencil className="size-3.5" />
+                        </button>
+                      </div>
                       {item.application.appliedAt && (
                         <p className="mt-2 text-xs text-muted-foreground">
                           Aplicado em {formatDate(item.application.appliedAt)}
@@ -116,6 +145,14 @@ function App() {
           </KanbanProvider>
         </div>
       </div>
+
+      {formOpen && (
+        <ApplicationForm
+          editing={editing}
+          onClose={() => setFormOpen(false)}
+          onSaved={load}
+        />
+      )}
     </main>
   )
 }

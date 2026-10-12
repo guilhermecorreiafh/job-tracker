@@ -25,3 +25,38 @@ jobs:
 
       - name: Rodar testes
         run: dotnet test --no-build --configuration Release --verbosity normal
+
+  e2e:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Sobe a stack
+        run: docker compose up -d --build
+
+      - name: Espera a API ficar pronta
+        run: timeout 180 bash -c 'until curl -sf http://localhost:3000/api/stats > /dev/null; do sleep 3; done'
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Instala dependências
+        working-directory: web
+        run: npm ci
+
+      - name: Instala o Chromium
+        working-directory: web
+        run: npx playwright install --with-deps chromium
+
+      - name: Roda os testes E2E
+        working-directory: web
+        run: npm run test:e2e
+
+      - name: Salva o relatório se falhar
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: web/playwright-report

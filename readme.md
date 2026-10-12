@@ -59,9 +59,21 @@ O front abre em http://localhost:5173 e o Vite repassa as chamadas `/api` pra AP
 
 ### Testes
 
+Testes de unidade das regras de domínio:
+
 ```bash
 dotnet test
 ```
+
+Testes de ponta a ponta com Playwright (precisam da stack rodando pelo Docker):
+
+```bash
+cd web
+npx playwright install chromium
+npm run test:e2e
+```
+
+Os dois rodam no GitHub Actions a cada push.
 
 Os testes rodam também no GitHub Actions a cada push.
 

@@ -83,4 +83,4 @@ docs/       imagens do README
 
 ## Licença
 
-MIT
+[MIT](LICENSE)

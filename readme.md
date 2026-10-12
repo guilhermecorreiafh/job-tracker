@@ -1,6 +1,6 @@
 # Job Tracker
 
-Organizador de processos seletivos em formato Kanban. Comecei a fazer porque estava me perdendo nas vagas que aplicava: em qual etapa cada uma estava, quando apliquei, quanto tempo a empresa levou pra responder. Planilha não resolvia, então virou projeto.
+Organizador de processos seletivos em formato Kanban.
 
 ![Quadro Kanban](docs/quadro.gif)
 

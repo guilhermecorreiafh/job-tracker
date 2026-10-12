@@ -10,12 +10,12 @@ public class JobApplication
     public DateOnly? AppliedAt { get; set; }
     public string? Notes { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public List<StageChange> StageChanges {get; set;} = [];
+    public List<StageChange> StageChanges { get; set; } = [];
 
     public void StartAt(Stage stage, DateTime when)
     {
         Stage = stage;
-        StageChanges.Add(new StageChange {FromStage = null, ToStage = stage, ChangedAt = when});
+        StageChanges.Add(new StageChange { FromStage = null, ToStage = stage, ChangedAt = when });
     }
 
     public bool MoveTo(Stage newStage, DateTime when)
@@ -23,18 +23,18 @@ public class JobApplication
         if (newStage == Stage)
             return false;
 
-        StageChanges.Add(new StageChange {FromStage = Stage, ToStage = newStage, ChangedAt = when});
+        StageChanges.Add(new StageChange { FromStage = Stage, ToStage = newStage, ChangedAt = when });
         Stage = newStage;
         return true;
     }
 
     public double? DaysToFirstResponse()
     {
-        var changes = StageChange.OrderBy(changes => c.ChangedAt).ToList();
+        var changes = StageChanges.OrderBy(c => c.ChangedAt).ToList();
 
         var applied = changes.FirstOrDefault(c => c.ToStage == Stage.Applied);
         if (applied is null)
-            return null
+            return null;
 
         var next = changes.FirstOrDefault(c => c.ChangedAt > applied.ChangedAt);
         if (next is null)

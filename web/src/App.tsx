@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { DragEndEvent } from '@dnd-kit/core'
-import { Pencil } from 'lucide-react'
+import { Pencil, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   KanbanBoard,
@@ -13,6 +13,7 @@ import { getApplications, updateApplication } from './api'
 import { ApplicationForm } from './ApplicationForm'
 import { STAGES, type JobApplication, type Stage } from './types'
 import { Dashboard } from './Dashboard'
+import { Input } from '@/components/ui/input'
 
 type BoardItem = {
   id: string
@@ -41,11 +42,29 @@ function App() {
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<JobApplication | null>(null)
   const [view, setView] = useState<'board' | 'dashboard'>('board')
+  const [search, setSearch] = useState('')
   const itemsRef = useRef<BoardItem[]>([])
 
   function updateItems(next: BoardItem[]) {
     itemsRef.current = next
     setItems(next)
+  }
+
+  const term = search.trim().toLowerCase()
+
+  const visibleItems = term
+    ? items.filter(
+      i =>
+        i.application.company.toLowerCase().includes(term) ||
+        i.application.role.toLowerCase().includes(term),
+    )
+    : items
+
+  function handleDataChange(next: BoardItem[]) {
+    if (!term) return updateItems(next)
+
+    const hidden = itemsRef.current.filter(i => !next.some(n => n.id === i.id))
+    updateItems([...next, ...hidden])
   }
 
   function load() {
@@ -105,13 +124,25 @@ function App() {
 
       {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
 
+      {view === 'board' && (
+        <div className="relative mb-4 max-w-sm">
+          <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Buscar por empresa ou cargo"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="pl-8"
+          />
+        </div>
+      )}
+
       {view === 'board' ? (
         <div className="overflow-x-auto pb-4">
           <div className="min-w-[1200px]">
             <KanbanProvider
               columns={STAGES}
-              data={items}
-              onDataChange={updateItems}
+              data={visibleItems}
+              onDataChange={handleDataChange}
               onDragEnd={handleDragEnd}
             >
               {column => (
@@ -119,7 +150,7 @@ function App() {
                   <KanbanHeader className="flex items-center justify-between">
                     <span>{column.name}</span>
                     <span className="text-xs text-muted-foreground">
-                      {items.filter(i => i.column === column.id).length}
+                      {visibleItems.filter(i => i.column === column.id).length}
                     </span>
                   </KanbanHeader>
 

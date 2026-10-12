@@ -27,4 +27,19 @@ public class JobApplication
         Stage = newStage;
         return true;
     }
+
+    public double? DaysToFirstResponse()
+    {
+        var changes = StageChange.OrderBy(changes => c.ChangedAt).ToList();
+
+        var applied = changes.FirstOrDefault(c => c.ToStage == Stage.Applied);
+        if (applied is null)
+            return null
+
+        var next = changes.FirstOrDefault(c => c.ChangedAt > applied.ChangedAt);
+        if (next is null)
+            return null;
+
+        return (next.ChangedAt - applied.ChangedAt).TotalDays;
+    }
 }

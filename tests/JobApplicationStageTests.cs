@@ -50,4 +50,25 @@ public class JobApplicationStageTests
         Assert.False(moved);
         Assert.Single(application.StageChanges);
     }
+
+    [Fact]
+public void DaysToFirstResponse_QuandoHouveResposta_RetornaDiasEntreAplicadoEProximaEtapa()
+{
+    var application = new JobApplication();
+    var applied = new DateTime(2026, 10, 1, 12, 0, 0, DateTimeKind.Utc);
+
+    application.StartAt(Stage.Applied, applied);
+    application.MoveTo(Stage.Interview, applied.AddDays(7));
+
+    Assert.Equal(7, application.DaysToFirstResponse());
+}
+
+[Fact]
+public void DaysToFirstResponse_QuandoAindaNaoHouveResposta_RetornaNulo()
+{
+    var application = new JobApplication();
+    application.StartAt(Stage.Applied, DateTime.UtcNow);
+
+    Assert.Null(application.DaysToFirstResponse());
+}
 }

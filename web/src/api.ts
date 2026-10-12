@@ -1,4 +1,4 @@
-import type { JobApplication, StageChange } from './types'
+import type { JobApplication, StageChange, Stats } from './types'
 
 export type ApplicationInput = Omit<JobApplication, 'id' | 'createdAt'>
 
@@ -58,5 +58,11 @@ export async function deleteApplication(id: number): Promise<void> {
 export async function getHistory(id: number): Promise<StageChange[]> {
   const res = await fetch(`/api/job-applications/${id}/history`)
   if (!res.ok) throw new Error('Erro ao carregar histórico')
+  return res.json()
+}
+
+export async function getStats(): Promise<Stats> {
+  const res = await fetch('/api/stats')
+  if (!res.ok) throw new Error('Erro ao carregar estatísticas')
   return res.json()
 }

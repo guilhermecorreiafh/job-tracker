@@ -25,3 +25,10 @@ export type StageChange = {
     toStage: Stage
     changedAt: string
 }
+
+export type Stats = {
+    total: number
+    byStage: {stage: Stage; count: number}[]
+    byWeek: {weekStart: string; count: number}[]
+    averageResponseDays: number | null
+}

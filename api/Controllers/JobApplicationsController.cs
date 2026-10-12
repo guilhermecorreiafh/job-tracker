@@ -36,6 +36,7 @@ public class JobApplicationsController(AppDbContext db) : ControllerBase
     {
         var application = new JobApplication();
         Apply(application, request);
+        application.StartAt(request.Stage, DateTime.UtcNow);
 
         db.JobApplications.Add(application);
         await db.SaveChangesAsync();
@@ -53,7 +54,6 @@ public class JobApplicationsController(AppDbContext db) : ControllerBase
 
         Apply(application, request);
         application.MoveTo(request.Stage, DateTime.UtcNow);
-        application.StartAt(request.Stage, DateTime.UtcNow);
         await db.SaveChangesAsync();
 
         return NoContent();

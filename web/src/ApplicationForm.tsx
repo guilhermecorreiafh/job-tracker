@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { createApplication, deleteApplication, updateApplication } from './api'
 import { STAGES, type JobApplication, type Stage } from './types'
+import { HistoryTimeline } from './HistoryTimeline'
 
 type Props = {
   editing: JobApplication | null
@@ -73,7 +74,7 @@ export function ApplicationForm({ editing, onClose, onSaved }: Props) {
 
   return (
     <Dialog open onOpenChange={open => !open && onClose()}>
-      <DialogContent>
+      <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{editing ? 'Editar candidatura' : 'Nova candidatura'}</DialogTitle>
         </DialogHeader>
@@ -121,6 +122,8 @@ export function ApplicationForm({ editing, onClose, onSaved }: Props) {
           </div>
 
           {error && <p className="text-sm text-red-500">{error}</p>}
+
+          {editing && <HistoryTimeline applicationId={editing.id} />}
 
           <DialogFooter>
             {editing && (

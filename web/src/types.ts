@@ -19,3 +19,9 @@ export const STAGES: { id: Stage; name: string }[] = [
     {id: 'Offer', name: 'Proposta'},
     {id: 'Closed', name: 'Encerrado'},
 ]
+
+export type StageChange = {
+    fromStage : Stage | null
+    toStage: Stage
+    changedAt: string
+}
